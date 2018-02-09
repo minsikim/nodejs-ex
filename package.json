@@ -4,6 +4,7 @@
   "description": "studying nodejs",
   "main": "hello.js",
   "dependencies": {
+    "express": "^4.16.2",
     "underscore": "^1.8.3"
   },
   "devDependencies": {},
