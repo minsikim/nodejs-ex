@@ -1,0 +1,11 @@
+html
+  meta
+  body
+    h1 Articles
+    ul
+      each topic in topics
+        li
+          a(href='/topic/'+topic)= topic
+    article
+      h2= title
+      = description
