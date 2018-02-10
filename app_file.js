@@ -15,7 +15,13 @@ app.listen(3000, function(){
 })
 
 app.get('/topic/new', function(req, res){
-  res.render('new');
+  fs.readdir('data', function(err, files){
+    if(err){
+      console.log(err);
+      res.status(500).send(err)
+    }
+  res.render('new', {topics:files});
+  });
 });
 app.post('/topic', function(req, res){
   var title = req.body.title;
@@ -25,36 +31,52 @@ app.post('/topic', function(req, res){
       console.log(err);
       res.status(500).send(err)
     }
-    res.send('GOOD!');
+    fs.readdir('data', function(err, files){
+      if(err){
+        console.log(err);
+        res.status(500).send(err)
+      }
+    res.render('view',{topics:files});
+    });
   });
 });
-app.get('/topic', function(req, res){
-  fs.readdir('data', function(err, files){
-    if(err){
-      console.log(err);
-      res.status(500).send(err)
-    }
-    res.render('view', {topics:files});
-  })
-});
+// app.get('/topic', function(req, res){
+//   fs.readdir('data', function(err, files){
+//     if(err){
+//       console.log(err);
+//       res.status(500).send(err)
+//     }
+//     res.render('view', {topics:files});
+//   })
+// });
 //콜론(:)은 특수한 문자임
-app.get('/topic/:id', function(req, res){
-  fs.readdir('data', function(err, files){
-    if(err){
-      console.log(err);
-      res.status(500).send(err)
-    }
-    var id = req.params.id;
-    fs.readFile('data/'+id, 'utf8', function(err, data){
+app.get(['/topic', '/topic/:id'], function(req, res){
+  //id 값 있을때
+  var id = req.params.id;
+  if(id){
+    fs.readdir('data', function(err, files){
+      if(err){
+        console.log(err);
+        res.status(500).send(err)
+      }
+      fs.readFile('data/'+id, 'utf8', function(err, data){
+        if(err){
+          console.log(err);
+          res.status(500).send('ERROR!')
+        }
+        console.log(id+':'+data);
+        res.render('view', {title:id, topics:files, description:data});
+        // res.send(data);
+      })
+    })
+  } else {
+    fs.readdir('data', function(err, files){
       if(err){
         console.log(err);
         res.status(500).send('ERROR!')
       }
-      console.log(id+':'+data);
-      res.render('view', {title:id, topics:files, description:data});
-      // res.send(data);
+      res.render('view', {title:"Welcome", topics:files,
+      description:"this is a very simple webpage"});
     })
-  })
-
-
-})
+  }
+});
